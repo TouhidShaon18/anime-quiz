@@ -355,7 +355,7 @@ function App() {
         {screen === "intro" && (
           <div className="intro">
             <p className="eyebrow">Anime Knowledge Trial</p>
-            <h1 id="app-title">Earn your anime post</h1>
+            <h1 id="app-title">Claim Your Guild Rank</h1>
             <p className="intro-copy">
               Answer 10 questions and receive a ranked certificate based on your score.
             </p>
