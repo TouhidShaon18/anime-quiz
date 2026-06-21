@@ -903,6 +903,7 @@ const attemptStorageKey = "marshmallow-anime-quiz-attempts";
 const maxAttemptsPerDay = 2;
 const questionsPerQuiz = 10;
 const certificateImageUrl = "/quiz-arena.png";
+const logoImageUrl = "/marshmallow-logo-cropped.png";
 const ranksByScore: Rank[] = [
   {
     title: "Academy Rookie",
@@ -1052,6 +1053,8 @@ function buildCertificateCanvas(playerName: string, score: number, includeImage:
     }
   }
 
+  const logo = document.querySelector<HTMLImageElement>("#marshmallow-logo-source");
+
   ctx.fillStyle = "rgba(255, 248, 236, 0.9)";
   ctx.fillRect(80, 80, 1440, 840);
   ctx.strokeStyle = "#d99a24";
@@ -1061,18 +1064,22 @@ function buildCertificateCanvas(playerName: string, score: number, includeImage:
   ctx.lineWidth = 3;
   ctx.strokeRect(138, 138, 1324, 724);
 
+  if (logo?.complete && logo.naturalWidth) {
+    ctx.drawImage(logo, 705, 126, 190, 150);
+  }
+
   ctx.textAlign = "center";
   ctx.fillStyle = "#0d8c8f";
   ctx.font = "800 34px Arial, sans-serif";
-  ctx.fillText("OFFICIAL POWER LEVEL CERTIFICATE", 800, 210);
+  ctx.fillText("OFFICIAL POWER LEVEL CERTIFICATE", 800, 300);
 
   ctx.fillStyle = "#171519";
   ctx.font = "600 40px Arial, sans-serif";
-  ctx.fillText("This certifies that", 800, 295);
+  ctx.fillText("This certifies that", 800, 370);
 
   ctx.fillStyle = "#ef5d52";
   ctx.font = "900 104px Arial, sans-serif";
-  drawWrappedText(ctx, playerName.toUpperCase(), 800, 410, 1180, 108);
+  drawWrappedText(ctx, playerName.toUpperCase(), 800, 480, 1180, 108);
 
   ctx.fillStyle = "#171519";
   ctx.font = "600 34px Arial, sans-serif";
@@ -1080,25 +1087,25 @@ function buildCertificateCanvas(playerName: string, score: number, includeImage:
     ctx,
     "has successfully completed the Saiyan Assessment and achieved the rank of",
     800,
-    535,
+    600,
     1120,
     46,
   );
 
   ctx.fillStyle = "#171519";
   ctx.font = "900 76px Arial, sans-serif";
-  ctx.fillText(rank.title.toUpperCase(), 800, 665);
+  ctx.fillText(rank.title.toUpperCase(), 800, 715);
 
   ctx.fillStyle = "#675f55";
   ctx.font = "700 36px Arial, sans-serif";
-  ctx.fillText(`Score: ${score} / ${questionsPerQuiz}`, 800, 735);
+  ctx.fillText(`Score: ${score} / ${questionsPerQuiz}`, 800, 780);
 
   ctx.font = "600 32px Arial, sans-serif";
-  drawWrappedText(ctx, `"${rank.message}"`, 800, 805, 1040, 44);
+  drawWrappedText(ctx, `"${rank.message}"`, 800, 840, 1040, 44);
 
   ctx.fillStyle = "#171519";
   ctx.font = "800 32px Arial, sans-serif";
-  ctx.fillText("Awarded by Marshmallow Tech", 800, 895);
+  ctx.fillText("Awarded by Marshmallow Tech", 800, 930);
 
   return canvas;
 }
@@ -1215,11 +1222,10 @@ function App() {
   return (
     <main className="app-shell">
       <img id="certificate-source-image" src={certificateImageUrl} alt="" aria-hidden="true" />
+      <img id="marshmallow-logo-source" src={logoImageUrl} alt="" aria-hidden="true" />
       <section className="quiz-panel" aria-labelledby="app-title">
         <div className="brand-row">
-          <span className="brand-mark" aria-hidden="true">
-            MT
-          </span>
+          <img className="brand-logo" src={logoImageUrl} alt="" aria-hidden="true" />
           <span className="brand-name">Marshmallow Tech</span>
         </div>
 
