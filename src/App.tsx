@@ -124,7 +124,7 @@ const ranksByScore: Rank[] = [
   },
   {
     title: "Super Saiyan",
-    message: "Your power level broke the scanner. Marshmallow Tech announces that you are Super Saiyan.",
+    message: "Your power level exceeded the scanner's limits. Few warriors reach this legendary form.",
   },
   {
     title: "Pirate King",
@@ -221,26 +221,41 @@ function buildCertificateCanvas(playerName: string, score: number, includeImage:
   ctx.textAlign = "center";
   ctx.fillStyle = "#0d8c8f";
   ctx.font = "800 34px Arial, sans-serif";
-  ctx.fillText("OFFICIAL CERTIFICATE", 800, 232);
+  ctx.fillText("OFFICIAL POWER LEVEL CERTIFICATE", 800, 210);
 
   ctx.fillStyle = "#171519";
-  ctx.font = "800 58px Arial, sans-serif";
-  ctx.fillText("Marshmallow Tech announces", 800, 330);
+  ctx.font = "600 40px Arial, sans-serif";
+  ctx.fillText("This certifies that", 800, 295);
 
   ctx.fillStyle = "#ef5d52";
-  ctx.font = "900 112px Arial, sans-serif";
-  drawWrappedText(ctx, playerName, 800, 475, 1180, 116);
+  ctx.font = "900 104px Arial, sans-serif";
+  drawWrappedText(ctx, playerName.toUpperCase(), 800, 410, 1180, 108);
 
   ctx.fillStyle = "#171519";
-  ctx.font = "900 72px Arial, sans-serif";
-  ctx.fillText(rank.title, 800, 650);
+  ctx.font = "600 34px Arial, sans-serif";
+  drawWrappedText(
+    ctx,
+    "has successfully completed the Saiyan Assessment and achieved the rank of",
+    800,
+    535,
+    1120,
+    46,
+  );
+
+  ctx.fillStyle = "#171519";
+  ctx.font = "900 76px Arial, sans-serif";
+  ctx.fillText(rank.title.toUpperCase(), 800, 665);
 
   ctx.fillStyle = "#675f55";
-  ctx.font = "700 34px Arial, sans-serif";
-  ctx.fillText(`${score} correct answers out of ${questions.length}`, 800, 720);
+  ctx.font = "700 36px Arial, sans-serif";
+  ctx.fillText(`Score: ${score} / ${questions.length}`, 800, 735);
 
   ctx.font = "600 32px Arial, sans-serif";
-  drawWrappedText(ctx, rank.message, 800, 790, 1040, 44);
+  drawWrappedText(ctx, `"${rank.message}"`, 800, 805, 1040, 44);
+
+  ctx.fillStyle = "#171519";
+  ctx.font = "800 32px Arial, sans-serif";
+  ctx.fillText("Awarded by Marshmallow Tech", 800, 895);
 
   return canvas;
 }
@@ -469,14 +484,18 @@ function App() {
         {screen === "result" && (
           <section className="certificate" aria-live="polite">
             <div className="certificate-inner">
-              <p className="eyebrow">Official Certificate</p>
-              <h2>Marshmallow Tech announces</h2>
-              <p className="winner-name">{displayName}</p>
-              <p className="rank-line">{finalRank.title}</p>
-              <p className="score-line">
-                {finalScore} correct answers out of {questions.length}
+              <p className="eyebrow">Official Power Level Certificate</p>
+              <p className="certificate-kicker">This certifies that</p>
+              <p className="winner-name">{displayName.toUpperCase()}</p>
+              <p className="certificate-kicker">
+                has successfully completed the Saiyan Assessment and achieved the rank of
               </p>
-              <p className="certificate-note">{finalRank.message}</p>
+              <p className="rank-line">{finalRank.title.toUpperCase()}</p>
+              <p className="score-line">
+                Score: {finalScore} / {questions.length}
+              </p>
+              <p className="certificate-note">"{finalRank.message}"</p>
+              <p className="certificate-awarded">Awarded by Marshmallow Tech</p>
             </div>
             <div className="result-actions">
               <button

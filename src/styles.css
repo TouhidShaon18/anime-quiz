@@ -343,10 +343,13 @@ h1 {
   pointer-events: none;
 }
 
-.certificate h2 {
-  margin-bottom: 2px;
-  font-size: clamp(1.45rem, 4vw, 2.6rem);
-  letter-spacing: 0;
+.certificate-kicker {
+  margin: 0 auto;
+  max-width: 580px;
+  color: var(--ink);
+  font-size: clamp(0.98rem, 2.4vw, 1.28rem);
+  font-weight: 750;
+  line-height: 1.45;
 }
 
 .winner-name {
@@ -370,6 +373,16 @@ h1 {
   max-width: 560px;
   color: var(--muted);
   line-height: 1.55;
+}
+
+.certificate-note {
+  font-weight: 650;
+}
+
+.certificate-awarded {
+  margin: 0;
+  color: var(--ink);
+  font-weight: 900;
 }
 
 .result-actions {
