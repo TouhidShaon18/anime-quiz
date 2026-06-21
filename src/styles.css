@@ -164,16 +164,16 @@ h1 {
 
 .rank-strip {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 10px;
 }
 
 .rank-strip div {
-  min-height: 86px;
+  min-height: 76px;
   display: grid;
   align-content: center;
   gap: 4px;
-  padding: 12px;
+  padding: 10px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.52);
@@ -186,8 +186,10 @@ h1 {
 
 .rank-strip span {
   color: var(--ink);
-  font-size: 0.9rem;
+  font-size: 0.78rem;
   font-weight: 800;
+  line-height: 1.15;
+  text-transform: uppercase;
 }
 
 .primary-action,

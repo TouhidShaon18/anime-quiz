@@ -85,6 +85,52 @@ const questions: Question[] = [
 const attemptStorageKey = "marshmallow-anime-quiz-attempts";
 const maxAttemptsPerDay = 2;
 const certificateImageUrl = "/quiz-arena.png";
+const ranksByScore: Rank[] = [
+  {
+    title: "Academy Rookie",
+    message: "Your training arc begins today. Marshmallow Tech invites you to try again and claim a guild post.",
+  },
+  {
+    title: "Scout",
+    message: "You are ready to step beyond the walls. Marshmallow Tech awards you the post of Scout.",
+  },
+  {
+    title: "Soul Reaper",
+    message: "Your spirit pressure is rising. Marshmallow Tech awards you the post of Soul Reaper.",
+  },
+  {
+    title: "Hunter",
+    message: "You passed the first true test of instinct. Marshmallow Tech awards you the post of Hunter.",
+  },
+  {
+    title: "Pro Hero",
+    message: "You showed courage under pressure. Marshmallow Tech awards you the post of Pro Hero.",
+  },
+  {
+    title: "Hokage",
+    message: "Your village would trust your judgment. Marshmallow Tech recognizes you as Hokage.",
+  },
+  {
+    title: "Special Grade",
+    message: "Your anime knowledge carries dangerous energy. Marshmallow Tech awards you Special Grade status.",
+  },
+  {
+    title: "S-Class Hunter",
+    message: "You are moving with elite instincts. Marshmallow Tech awards you the post of S-Class Hunter.",
+  },
+  {
+    title: "Hashira",
+    message: "You have serious anime breathing technique. Marshmallow Tech awards you the post of Hashira.",
+  },
+  {
+    title: "Super Saiyan",
+    message: "Your power level broke the scanner. Marshmallow Tech announces that you are Super Saiyan.",
+  },
+  {
+    title: "Pirate King",
+    message: "You cleared the trial perfectly. Marshmallow Tech announces that you are the Pirate King.",
+  },
+];
 
 function todayKey() {
   const now = new Date();
@@ -109,38 +155,7 @@ function saveAttemptRecord(record: AttemptRecord) {
 }
 
 function getRank(score: number): Rank {
-  if (score === 10) {
-    return {
-      title: "King of Pirates",
-      message: "You cleared the trial perfectly. Marshmallow Tech announces that you are the King of Pirates.",
-    };
-  }
-
-  if (score === 9) {
-    return {
-      title: "Hokage",
-      message: "Your anime instincts are elite. Marshmallow Tech recognizes you as Hokage.",
-    };
-  }
-
-  if (score >= 5) {
-    return {
-      title: "Hashira",
-      message: "You have serious anime breathing technique. Marshmallow Tech awards you the post of Hashira.",
-    };
-  }
-
-  if (score >= 1) {
-    return {
-      title: "Scout",
-      message: "You are ready to step beyond the walls. Marshmallow Tech awards you the post of Scout.",
-    };
-  }
-
-  return {
-    title: "Academy Rookie",
-    message: "Your training arc begins today. Marshmallow Tech invites you to try again and claim a post.",
-  };
+  return ranksByScore[Math.max(0, Math.min(score, questions.length))];
 }
 
 function drawWrappedText(
@@ -364,22 +379,12 @@ function App() {
             </label>
 
             <div className="rank-strip" aria-label="Quiz rank thresholds">
-              <div>
-                <strong>1-4</strong>
-                <span>Scout</span>
-              </div>
-              <div>
-                <strong>5-8</strong>
-                <span>Hashira</span>
-              </div>
-              <div>
-                <strong>9</strong>
-                <span>Hokage</span>
-              </div>
-              <div>
-                <strong>10</strong>
-                <span>King of Pirates</span>
-              </div>
+              {ranksByScore.slice(1).map((rank, index) => (
+                <div key={rank.title}>
+                  <strong>{index + 1}</strong>
+                  <span>{rank.title}</span>
+                </div>
+              ))}
             </div>
 
             <button className="primary-action" type="button" disabled={attemptsLeft <= 0} onClick={startQuiz}>
