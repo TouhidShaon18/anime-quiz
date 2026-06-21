@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 
 type Question = {
+  id: number;
   difficulty: string;
   text: string;
   options: string[];
@@ -15,75 +16,192 @@ type Rank = {
 type AttemptRecord = {
   date: string;
   attempts: number;
+  usedQuestionIds: number[];
 };
 
 type Screen = "intro" | "quiz" | "retry" | "result";
 
-const questions: Question[] = [
+const questionBank: Question[] = [
   {
+    id: 1,
     difficulty: "Level 1",
-    text: "Which anime follows Naruto Uzumaki as he dreams of becoming Hokage?",
-    options: ["Naruto", "Bleach", "One Piece", "Demon Slayer"],
-    answer: "Naruto",
+    text: "What is Naruto Uzumaki's dream?",
+    options: ["Become Hokage", "Become Jonin", "Become ANBU", "Become Kazekage"],
+    answer: "Become Hokage",
   },
   {
+    id: 2,
     difficulty: "Level 2",
-    text: "In One Piece, what is the name of Luffy's pirate crew?",
-    options: ["Straw Hat Pirates", "Heart Pirates", "Blackbeard Pirates", "Red Hair Pirates"],
-    answer: "Straw Hat Pirates",
+    text: "Who is Luffy searching for?",
+    options: ["Dragon Balls", "One Piece", "Death Note", "Titan Serum"],
+    answer: "One Piece",
   },
   {
+    id: 3,
     difficulty: "Level 3",
-    text: "In Demon Slayer, what group do the elite swordsmen known as Hashira belong to?",
-    options: ["Demon Slayer Corps", "Survey Corps", "Soul Society", "Phantom Troupe"],
-    answer: "Demon Slayer Corps",
+    text: "What is the name of Tanjiro's sister?",
+    options: ["Shinobu", "Mitsuri", "Nezuko", "Kanao"],
+    answer: "Nezuko",
   },
   {
+    id: 4,
     difficulty: "Level 4",
-    text: "In Attack on Titan, which branch is known for expeditions outside the walls?",
-    options: ["Scout Regiment", "Military Police Brigade", "Garrison Regiment", "Warrior Unit"],
-    answer: "Scout Regiment",
+    text: "In Attack on Titan, what are giant humanoids called?",
+    options: ["Hollows", "Titans", "Curses", "Demons"],
+    answer: "Titans",
   },
   {
+    id: 5,
     difficulty: "Level 5",
-    text: "In Death Note, what is the name of the Shinigami who drops the notebook into the human world?",
-    options: ["Ryuk", "Rem", "Gelus", "Sidoh"],
-    answer: "Ryuk",
+    text: "What sport is featured in Haikyuu!!?",
+    options: ["Basketball", "Soccer", "Volleyball", "Baseball"],
+    answer: "Volleyball",
   },
   {
+    id: 6,
     difficulty: "Level 6",
-    text: "In Fullmetal Alchemist: Brotherhood, what principle says that something of equal value must be exchanged?",
-    options: ["Equivalent Exchange", "Nen Contract", "Cursed Technique", "Bankai Release"],
-    answer: "Equivalent Exchange",
+    text: "Who possesses the Death Note first in the series?",
+    options: ["Light Yagami", "L", "Ryuk", "Misa"],
+    answer: "Light Yagami",
   },
   {
+    id: 7,
     difficulty: "Level 7",
-    text: "In Hunter x Hunter, which Nen category does Killua Zoldyck primarily use?",
-    options: ["Transmutation", "Enhancement", "Conjuration", "Manipulation"],
-    answer: "Transmutation",
+    text: "What is Goku's Saiyan name?",
+    options: ["Vegeta", "Bardock", "Kakarot", "Raditz"],
+    answer: "Kakarot",
   },
   {
+    id: 8,
     difficulty: "Level 8",
-    text: "In Bleach, what is the name of Ichigo Kurosaki's Zanpakuto spirit/sword?",
-    options: ["Zangetsu", "Senbonzakura", "Hyourinmaru", "Benihime"],
-    answer: "Zangetsu",
+    text: "What is the name of Ash Ketchum's first Pokemon?",
+    options: ["Bulbasaur", "Pikachu", "Charmander", "Squirtle"],
+    answer: "Pikachu",
   },
   {
+    id: 9,
     difficulty: "Level 9",
-    text: "In Steins;Gate, what is the name of the group led by Rintaro Okabe?",
-    options: ["Future Gadget Laboratory", "Special Operations Squad", "Night Raid", "Gurren Brigade"],
-    answer: "Future Gadget Laboratory",
+    text: "Which anime features Edward Elric?",
+    options: ["Bleach", "Fullmetal Alchemist", "Fairy Tail", "Black Clover"],
+    answer: "Fullmetal Alchemist",
   },
   {
+    id: 10,
     difficulty: "Level 10",
-    text: "In Neon Genesis Evangelion, what is the name of the secret organization operating behind NERV?",
-    options: ["SEELE", "WILLE", "Geass Order", "The Round Table"],
-    answer: "SEELE",
+    text: "What color is Ichigo Kurosaki's hair?",
+    options: ["Black", "Brown", "Orange", "Blue"],
+    answer: "Orange",
+  },
+  {
+    id: 11,
+    difficulty: "Level 11",
+    text: "Who is Naruto's father?",
+    options: ["Jiraiya", "Minato", "Kakashi", "Itachi"],
+    answer: "Minato",
+  },
+  {
+    id: 12,
+    difficulty: "Level 12",
+    text: "What is the name of Monkey D. Luffy's brother?",
+    options: ["Ace", "Law", "Shanks", "Kid"],
+    answer: "Ace",
+  },
+  {
+    id: 13,
+    difficulty: "Level 13",
+    text: "Which organization does Gojo belong to?",
+    options: ["Demon Slayer Corps", "Soul Society", "Jujutsu High", "Survey Corps"],
+    answer: "Jujutsu High",
+  },
+  {
+    id: 14,
+    difficulty: "Level 14",
+    text: "What is Levi Ackerman famous for?",
+    options: ["Cooking", "Titan Slaying", "Alchemy", "Basketball"],
+    answer: "Titan Slaying",
+  },
+  {
+    id: 15,
+    difficulty: "Level 15",
+    text: "What is Deku's real name?",
+    options: ["Katsuki", "Shoto", "Izuku Midoriya", "Tenya"],
+    answer: "Izuku Midoriya",
+  },
+  {
+    id: 16,
+    difficulty: "Level 16",
+    text: "Who teaches Class 1-A?",
+    options: ["Endeavor", "Aizawa", "All Might", "Hawks"],
+    answer: "Aizawa",
+  },
+  {
+    id: 17,
+    difficulty: "Level 17",
+    text: "What is the name of Gon Freecss's best friend?",
+    options: ["Kurapika", "Leorio", "Killua", "Hisoka"],
+    answer: "Killua",
+  },
+  {
+    id: 18,
+    difficulty: "Level 18",
+    text: "In Demon Slayer, what breathing style does Zenitsu use?",
+    options: ["Water", "Thunder", "Flame", "Wind"],
+    answer: "Thunder",
+  },
+  {
+    id: 19,
+    difficulty: "Level 19",
+    text: "What is the name of the giant wall protecting humanity in AOT?",
+    options: ["Wall Maria", "Wall Rose", "Wall Sina", "All of these"],
+    answer: "All of these",
+  },
+  {
+    id: 20,
+    difficulty: "Level 20",
+    text: "Which anime is about pirates?",
+    options: ["Naruto", "One Piece", "Bleach", "Dr. Stone"],
+    answer: "One Piece",
+  },
+  {
+    id: 21,
+    difficulty: "Level 21",
+    text: "Who is known as the strongest sorcerer in JJK?",
+    options: ["Sukuna", "Geto", "Gojo", "Nanami"],
+    answer: "Gojo",
+  },
+  {
+    id: 22,
+    difficulty: "Level 22",
+    text: "What is the name of Eren's hometown?",
+    options: ["Shiganshina", "Trost", "Liberio", "Ragako"],
+    answer: "Shiganshina",
+  },
+  {
+    id: 23,
+    difficulty: "Level 23",
+    text: "What is Light Yagami's alias?",
+    options: ["Joker", "Kira", "Zero", "Phantom"],
+    answer: "Kira",
+  },
+  {
+    id: 24,
+    difficulty: "Level 24",
+    text: "Which anime features the Survey Corps?",
+    options: ["One Piece", "Naruto", "Attack on Titan", "Black Clover"],
+    answer: "Attack on Titan",
+  },
+  {
+    id: 25,
+    difficulty: "Level 25",
+    text: "What color is Nezuko's bamboo muzzle?",
+    options: ["Green", "Black", "Brown", "Red"],
+    answer: "Green",
   },
 ];
 
 const attemptStorageKey = "marshmallow-anime-quiz-attempts";
 const maxAttemptsPerDay = 2;
+const questionsPerQuiz = 10;
 const certificateImageUrl = "/quiz-arena.png";
 const ranksByScore: Rank[] = [
   {
@@ -140,11 +258,19 @@ function todayKey() {
 }
 
 function getAttemptRecord(): AttemptRecord {
-  const fallback: AttemptRecord = { date: todayKey(), attempts: 0 };
+  const fallback: AttemptRecord = { date: todayKey(), attempts: 0, usedQuestionIds: [] };
 
   try {
     const record = JSON.parse(localStorage.getItem(attemptStorageKey) || "null") as AttemptRecord | null;
-    return record?.date === todayKey() ? record : fallback;
+    if (record?.date !== todayKey()) {
+      return fallback;
+    }
+
+    return {
+      date: record.date,
+      attempts: record.attempts || 0,
+      usedQuestionIds: Array.isArray(record.usedQuestionIds) ? record.usedQuestionIds : [],
+    };
   } catch {
     return fallback;
   }
@@ -155,7 +281,24 @@ function saveAttemptRecord(record: AttemptRecord) {
 }
 
 function getRank(score: number): Rank {
-  return ranksByScore[Math.max(0, Math.min(score, questions.length))];
+  return ranksByScore[Math.max(0, Math.min(score, questionsPerQuiz))];
+}
+
+function shuffleQuestions(items: Question[]) {
+  return [...items].sort(() => Math.random() - 0.5);
+}
+
+function createQuizQuestions(excludedQuestionIds: number[]) {
+  const excluded = new Set(excludedQuestionIds);
+  const freshQuestions = questionBank.filter((question) => !excluded.has(question.id));
+  const source = freshQuestions.length >= questionsPerQuiz ? freshQuestions : questionBank;
+
+  return shuffleQuestions(source)
+    .slice(0, questionsPerQuiz)
+    .map((question, index) => ({
+      ...question,
+      difficulty: `Level ${index + 1}`,
+    }));
 }
 
 function drawWrappedText(
@@ -248,7 +391,7 @@ function buildCertificateCanvas(playerName: string, score: number, includeImage:
 
   ctx.fillStyle = "#675f55";
   ctx.font = "700 36px Arial, sans-serif";
-  ctx.fillText(`Score: ${score} / ${questions.length}`, 800, 735);
+  ctx.fillText(`Score: ${score} / ${questionsPerQuiz}`, 800, 735);
 
   ctx.font = "600 32px Arial, sans-serif";
   drawWrappedText(ctx, `"${rank.message}"`, 800, 805, 1040, 44);
@@ -264,7 +407,10 @@ function App() {
   const [screen, setScreen] = useState<Screen>("intro");
   const [playerName, setPlayerName] = useState("");
   const [current, setCurrent] = useState(0);
-  const [answers, setAnswers] = useState<(string | null)[]>(() => Array(questions.length).fill(null));
+  const [activeQuestions, setActiveQuestions] = useState<Question[]>(() =>
+    createQuizQuestions(getAttemptRecord().usedQuestionIds),
+  );
+  const [answers, setAnswers] = useState<(string | null)[]>(() => Array(questionsPerQuiz).fill(null));
   const [finalScore, setFinalScore] = useState(0);
   const [attemptsUsed, setAttemptsUsed] = useState(0);
 
@@ -273,23 +419,33 @@ function App() {
   }, []);
 
   const score = useMemo(
-    () => questions.reduce((total, question, index) => total + (answers[index] === question.answer ? 1 : 0), 0),
-    [answers],
+    () =>
+      activeQuestions.reduce(
+        (total, question, index) => total + (answers[index] === question.answer ? 1 : 0),
+        0,
+      ),
+    [activeQuestions, answers],
   );
   const attemptsLeft = Math.max(maxAttemptsPerDay - attemptsUsed, 0);
-  const currentQuestion = questions[current];
+  const currentQuestion = activeQuestions[current];
   const finalRank = getRank(finalScore);
   const displayName = playerName.trim() || "Anime Challenger";
 
   const resetQuizForAttempt = () => {
+    const nextQuestions = createQuizQuestions(getAttemptRecord().usedQuestionIds);
     setCurrent(0);
-    setAnswers(Array(questions.length).fill(null));
+    setActiveQuestions(nextQuestions);
+    setAnswers(Array(nextQuestions.length).fill(null));
   };
 
-  const addAttempt = () => {
+  const addAttempt = (answeredQuestionIds: number[]) => {
     const record = getAttemptRecord();
     const nextAttempts = Math.min(record.attempts + 1, maxAttemptsPerDay);
-    const nextRecord = { ...record, attempts: nextAttempts };
+    const nextRecord = {
+      ...record,
+      attempts: nextAttempts,
+      usedQuestionIds: Array.from(new Set([...record.usedQuestionIds, ...answeredQuestionIds])),
+    };
     saveAttemptRecord(nextRecord);
     setAttemptsUsed(nextAttempts);
     return nextAttempts;
@@ -306,7 +462,7 @@ function App() {
 
   const finishAttempt = () => {
     const nextScore = score;
-    const nextAttemptsUsed = addAttempt();
+    const nextAttemptsUsed = addAttempt(activeQuestions.map((question) => question.id));
     setFinalScore(nextScore);
 
     if (nextAttemptsUsed === 1) {
@@ -324,7 +480,7 @@ function App() {
       return;
     }
 
-    if (current === questions.length - 1) {
+    if (current === activeQuestions.length - 1) {
       finishAttempt();
       return;
     }
@@ -412,12 +568,12 @@ function App() {
           <form className="question-card" onSubmit={submitAnswer}>
             <div className="quiz-topline">
               <span>
-                {currentQuestion.difficulty} · Question {current + 1} of {questions.length}
+                {currentQuestion.difficulty} · Question {current + 1} of {activeQuestions.length}
               </span>
               <span>Score {score}</span>
             </div>
             <div className="progress-track" aria-hidden="true">
-              <span style={{ width: `${((current + 1) / questions.length) * 100}%` }} />
+              <span style={{ width: `${((current + 1) / activeQuestions.length) * 100}%` }} />
             </div>
             <h2>{currentQuestion.text}</h2>
             <div className="answers">
@@ -449,7 +605,7 @@ function App() {
                 Back
               </button>
               <button className="primary-action" type="submit">
-                {current === questions.length - 1 ? "Finish" : "Next"}
+                {current === activeQuestions.length - 1 ? "Finish" : "Next"}
               </button>
             </div>
           </form>
@@ -460,7 +616,7 @@ function App() {
             <p className="eyebrow">First Attempt Complete</p>
             <h2>Keep this result or try one last time?</h2>
             <p>
-              You scored {finalScore} out of {questions.length}, which currently gives you {getRank(finalScore).title}.
+              You scored {finalScore} out of {questionsPerQuiz}, which currently gives you {getRank(finalScore).title}.
               You can accept this certificate now or use your second and final attempt for today.
             </p>
             <div className="result-actions">
@@ -492,7 +648,7 @@ function App() {
               </p>
               <p className="rank-line">{finalRank.title.toUpperCase()}</p>
               <p className="score-line">
-                Score: {finalScore} / {questions.length}
+                Score: {finalScore} / {questionsPerQuiz}
               </p>
               <p className="certificate-note">"{finalRank.message}"</p>
               <p className="certificate-awarded">Awarded by Marshmallow Tech</p>
