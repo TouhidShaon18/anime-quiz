@@ -904,6 +904,8 @@ const maxAttemptsPerDay = 2;
 const questionsPerQuiz = 10;
 const certificateImageUrl = "/quiz-arena.png";
 const logoImageUrl = "/marshmallow-logo-cropped.png";
+const marshmallowWebsiteUrl = "https://marshmallow-tech.com/";
+const discountText = "2% discount unlocked at Marshmallow Tech.";
 const ranksByScore: Rank[] = [
   {
     title: "Academy Rookie",
@@ -1101,13 +1103,30 @@ function buildCertificateCanvas(playerName: string, score: number, includeImage:
   ctx.fillText(`Score: ${score} / ${questionsPerQuiz}`, 800, 780);
 
   ctx.font = "600 32px Arial, sans-serif";
-  drawWrappedText(ctx, `"${rank.message}"`, 800, 840, 1040, 44);
+  drawWrappedText(ctx, `"${rank.message}"`, 800, 830, 1040, 42);
+
+  ctx.fillStyle = "#0d8c8f";
+  ctx.font = "800 32px Arial, sans-serif";
+  ctx.fillText(discountText, 800, 895);
 
   ctx.fillStyle = "#171519";
   ctx.font = "800 32px Arial, sans-serif";
-  ctx.fillText("Awarded by Marshmallow Tech", 800, 930);
+  ctx.fillText("Awarded by Marshmallow Tech", 800, 940);
 
   return canvas;
+}
+
+function canvasToPngBlob(canvas: HTMLCanvasElement) {
+  return new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (blob) {
+        resolve(blob);
+        return;
+      }
+
+      reject(new Error("Could not create certificate image."));
+    }, "image/png");
+  });
 }
 
 function App() {
@@ -1203,20 +1222,58 @@ function App() {
     });
   };
 
-  const downloadCertificatePng = () => {
+  const getCertificateFileName = () => {
     const cleanName = displayName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
     const cleanRank = finalRank.title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+
+    return `${cleanName || "anime-challenger"}-${cleanRank}-certificate.png`;
+  };
+
+  const buildCertificateForExport = () => {
+    try {
+      return buildCertificateCanvas(displayName, finalScore, true);
+    } catch {
+      return buildCertificateCanvas(displayName, finalScore, false);
+    }
+  };
+
+  const openWebsiteTab = () => {
+    window.open(marshmallowWebsiteUrl, "_blank", "noopener,noreferrer");
+  };
+
+  const downloadCertificatePng = () => {
     const link = document.createElement("a");
 
-    link.download = `${cleanName || "anime-challenger"}-${cleanRank}-certificate.png`;
-
-    try {
-      link.href = buildCertificateCanvas(displayName, finalScore, true).toDataURL("image/png");
-    } catch {
-      link.href = buildCertificateCanvas(displayName, finalScore, false).toDataURL("image/png");
-    }
+    link.download = getCertificateFileName();
+    link.href = buildCertificateForExport().toDataURL("image/png");
 
     link.click();
+    openWebsiteTab();
+  };
+
+  const shareCertificatePng = async () => {
+    const fileName = getCertificateFileName();
+
+    try {
+      const blob = await canvasToPngBlob(buildCertificateForExport());
+      const file = new File([blob], fileName, { type: "image/png" });
+
+      if (navigator.canShare?.({ files: [file] })) {
+        await navigator.share({
+          title: "Marshmallow Tech Power Level Certificate",
+          text: `${displayName} achieved ${finalRank.title} and unlocked a 2% Marshmallow Tech discount.`,
+          files: [file],
+        });
+      } else {
+        const link = document.createElement("a");
+        link.download = fileName;
+        link.href = URL.createObjectURL(blob);
+        link.click();
+        window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+      }
+    } finally {
+      openWebsiteTab();
+    }
   };
 
   return (
@@ -1357,6 +1414,7 @@ function App() {
                 Score: {finalScore} / {questionsPerQuiz}
               </p>
               <p className="certificate-note">"{finalRank.message}"</p>
+              <p className="discount-line">{discountText}</p>
               <p className="certificate-awarded">Awarded by Marshmallow Tech</p>
             </div>
             <div className="result-actions">
@@ -1372,6 +1430,9 @@ function App() {
               </button>
               <button className="primary-action" type="button" onClick={downloadCertificatePng}>
                 Download PNG
+              </button>
+              <button className="primary-action" type="button" onClick={shareCertificatePng}>
+                Share
               </button>
             </div>
           </section>

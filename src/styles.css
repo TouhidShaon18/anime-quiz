@@ -376,6 +376,12 @@ h1 {
   font-weight: 650;
 }
 
+.discount-line {
+  margin: 0;
+  color: var(--teal);
+  font-weight: 950;
+}
+
 .certificate-awarded {
   margin: 0;
   color: var(--ink);
