@@ -906,6 +906,7 @@ const certificateImageUrl = "/quiz-arena.png";
 const logoImageUrl = "/marshmallow-logo-cropped.png";
 const marshmallowWebsiteUrl = "https://marshmallow-tech.com/";
 const discountText = "2% discount unlocked at Marshmallow Tech.";
+const couponText = 'Coupon code: "Naruto"';
 const ranksByScore: Rank[] = [
   {
     title: "Academy Rookie",
@@ -1107,11 +1108,12 @@ function buildCertificateCanvas(playerName: string, score: number, includeImage:
 
   ctx.fillStyle = "#0d8c8f";
   ctx.font = "800 32px Arial, sans-serif";
-  ctx.fillText(discountText, 800, 895);
+  ctx.fillText(discountText, 800, 885);
+  ctx.fillText(couponText, 800, 925);
 
   ctx.fillStyle = "#171519";
   ctx.font = "800 32px Arial, sans-serif";
-  ctx.fillText("Awarded by Marshmallow Tech", 800, 940);
+  ctx.fillText("Awarded by Marshmallow Tech", 800, 965);
 
   return canvas;
 }
@@ -1415,6 +1417,7 @@ function App() {
               </p>
               <p className="certificate-note">"{finalRank.message}"</p>
               <p className="discount-line">{discountText}</p>
+              <p className="coupon-line">{couponText}</p>
               <p className="certificate-awarded">Awarded by Marshmallow Tech</p>
             </div>
             <div className="result-actions">
