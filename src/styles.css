@@ -40,8 +40,7 @@ button:disabled {
   opacity: 0.55;
 }
 
-#certificate-source-image,
-#marshmallow-logo-source {
+#certificate-source-image {
   position: fixed;
   width: 1px;
   height: 1px;
@@ -75,13 +74,6 @@ button:disabled {
   gap: 10px;
   font-weight: 800;
   letter-spacing: 0;
-}
-
-.brand-logo {
-  width: 52px;
-  height: 52px;
-  object-fit: contain;
-  filter: drop-shadow(0 4px 8px rgba(23, 21, 25, 0.2));
 }
 
 .brand-name {
@@ -379,17 +371,6 @@ h1 {
 .discount-line {
   margin: 0;
   color: var(--teal);
-  font-weight: 950;
-}
-
-.coupon-line {
-  width: fit-content;
-  margin: 0 auto;
-  padding: 6px 12px;
-  border: 1px solid rgba(13, 140, 143, 0.26);
-  border-radius: 8px;
-  color: var(--ink);
-  background: rgba(13, 140, 143, 0.1);
   font-weight: 950;
 }
 
