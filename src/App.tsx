@@ -1029,6 +1029,31 @@ function drawWrappedText(
   lines.forEach((textLine, index) => {
     ctx.fillText(textLine, x, y + index * lineHeight);
   });
+
+  return lines.length;
+}
+
+function setFontToFit(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  weight: number,
+  startSize: number,
+  minSize: number,
+  family: string,
+  maxWidth: number,
+) {
+  let size = startSize;
+
+  while (size > minSize) {
+    ctx.font = `${weight} ${size}px ${family}`;
+    if (ctx.measureText(text).width <= maxWidth) {
+      return size;
+    }
+    size -= 4;
+  }
+
+  ctx.font = `${weight} ${minSize}px ${family}`;
+  return minSize;
 }
 
 function buildCertificateCanvas(playerName: string, score: number, includeImage: boolean) {
@@ -1041,7 +1066,7 @@ function buildCertificateCanvas(playerName: string, score: number, includeImage:
   }
 
   canvas.width = 1600;
-  canvas.height = 1000;
+  canvas.height = 1200;
   ctx.fillStyle = "#fff8ec";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -1054,56 +1079,66 @@ function buildCertificateCanvas(playerName: string, score: number, includeImage:
     }
   }
   ctx.fillStyle = "rgba(255, 248, 236, 0.9)";
-  ctx.fillRect(80, 80, 1440, 840);
+  ctx.fillRect(80, 80, 1440, 1040);
   ctx.strokeStyle = "#d99a24";
   ctx.lineWidth = 20;
-  ctx.strokeRect(96, 96, 1408, 808);
+  ctx.strokeRect(96, 96, 1408, 1008);
   ctx.strokeStyle = "rgba(23, 21, 25, 0.22)";
   ctx.lineWidth = 3;
-  ctx.strokeRect(138, 138, 1324, 724);
+  ctx.strokeRect(138, 138, 1324, 924);
 
   ctx.textAlign = "center";
+  ctx.textBaseline = "alphabetic";
+
   ctx.fillStyle = "#0d8c8f";
-  ctx.font = "800 34px Arial, sans-serif";
+  setFontToFit(ctx, "OFFICIAL POWER LEVEL CERTIFICATE", 800, 38, 30, "Arial, sans-serif", 1180);
   ctx.fillText("OFFICIAL POWER LEVEL CERTIFICATE", 800, 210);
 
   ctx.fillStyle = "#171519";
   ctx.font = "600 40px Arial, sans-serif";
-  ctx.fillText("This certifies that", 800, 295);
+  ctx.fillText("This certifies that", 800, 300);
 
   ctx.fillStyle = "#ef5d52";
-  ctx.font = "900 104px Arial, sans-serif";
-  drawWrappedText(ctx, playerName.toUpperCase(), 800, 410, 1180, 108);
+  const displayPlayerName = playerName.toUpperCase();
+  const nameFontSize = setFontToFit(ctx, displayPlayerName, 900, 104, 54, "Arial, sans-serif", 1180);
+  const nameLineHeight = nameFontSize + 14;
+  const nameLines = drawWrappedText(ctx, displayPlayerName, 800, 420, 1180, nameLineHeight);
+  let nextY = 420 + nameLines * nameLineHeight + 42;
 
   ctx.fillStyle = "#171519";
   ctx.font = "600 34px Arial, sans-serif";
-  drawWrappedText(
+  const assessmentLines = drawWrappedText(
     ctx,
     "has successfully completed the Saiyan Assessment and achieved the rank of",
     800,
-    535,
+    nextY,
     1120,
     46,
   );
+  nextY += assessmentLines * 46 + 58;
 
   ctx.fillStyle = "#171519";
-  ctx.font = "900 76px Arial, sans-serif";
-  ctx.fillText(rank.title.toUpperCase(), 800, 665);
+  setFontToFit(ctx, rank.title.toUpperCase(), 900, 76, 48, "Arial, sans-serif", 1120);
+  ctx.fillText(rank.title.toUpperCase(), 800, nextY);
+  nextY += 76;
 
   ctx.fillStyle = "#675f55";
   ctx.font = "700 36px Arial, sans-serif";
-  ctx.fillText(`Score: ${score} / ${questionsPerQuiz}`, 800, 735);
+  ctx.fillText(`Score: ${score} / ${questionsPerQuiz}`, 800, nextY);
+  nextY += 62;
 
   ctx.font = "600 32px Arial, sans-serif";
-  drawWrappedText(ctx, `"${rank.message}"`, 800, 800, 1040, 42);
+  const messageLines = drawWrappedText(ctx, `"${rank.message}"`, 800, nextY, 1040, 42);
+  nextY += messageLines * 42 + 56;
 
   ctx.fillStyle = "#0d8c8f";
   ctx.font = "800 32px Arial, sans-serif";
-  ctx.fillText(discountText, 800, 885);
+  ctx.fillText(discountText, 800, nextY);
+  nextY += 54;
 
   ctx.fillStyle = "#171519";
   ctx.font = "800 32px Arial, sans-serif";
-  ctx.fillText("Awarded by Marshmallow Tech", 800, 940);
+  ctx.fillText("Awarded by Marshmallow Tech", 800, Math.min(nextY, 1035));
 
   return canvas;
 }
