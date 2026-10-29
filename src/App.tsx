@@ -982,6 +982,19 @@ function saveAttemptRecord(record: AttemptRecord) {
   localStorage.setItem(attemptStorageKey, JSON.stringify(record));
 }
 
+const arcadeScoresUrl = "https://is-this-a-cell.vercel.app/api/arcade";
+
+// Send the score to the combined leaderboard on Touhid's Game Arcade (best score is kept).
+function submitArcadeScore(name: string, correct: number) {
+  const cleanName = name.trim();
+  if (!cleanName) return;
+  fetch(arcadeScoresUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ game: "anime-quiz", name: cleanName, correct, total: questionsPerQuiz }),
+  }).catch(() => {});
+}
+
 function getRank(score: number): Rank {
   return ranksByScore[Math.max(0, Math.min(score, questionsPerQuiz))];
 }
@@ -1217,6 +1230,7 @@ function App() {
     const nextScore = score;
     const nextAttemptsUsed = addAttempt(activeQuestions.map((question) => question.id));
     setFinalScore(nextScore);
+    submitArcadeScore(playerName, nextScore);
 
     if (nextAttemptsUsed === 1) {
       setScreen("retry");
@@ -1325,7 +1339,7 @@ function App() {
             </p>
 
             <label className="name-field" htmlFor="player-name">
-              <span>Name for certificate</span>
+              <span>Name for certificate &amp; leaderboard</span>
               <input
                 id="player-name"
                 type="text"
